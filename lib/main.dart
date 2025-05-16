@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:newflutterapp/models/user.dart';
 import 'package:newflutterapp/models/post.dart';
 import 'package:newflutterapp/pages/home.dart';
+import 'package:newflutterapp/pages/login.dart';
 
 void main() {
   User shiipou = User(
@@ -60,10 +61,26 @@ void main() {
   runApp(MyApp(posts: posts));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   final List<Post> posts;
 
   const MyApp({super.key, required this.posts});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late final List<Post> posts;
+
+  User? loggedUser;
+
+  @override
+  void initState() {
+    posts = widget.posts;
+
+    super.initState();
+  }
 
   // This widget is the root of your application.
   @override
@@ -71,12 +88,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Fundamentals',
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('My Social Network'),
-        ),
-        body: HomePage(posts: posts),
-      ),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => HomePage(posts: posts, user: loggedUser),
+        '/login': (context) => LoginPage(onLoggedIn: onLoggedIn),
+      },
     );
+  }
+
+  void onLoggedIn(String username, String password) {
+    setState(() {
+      loggedUser = User(username: username, avatar: '');
+    });
   }
 }
