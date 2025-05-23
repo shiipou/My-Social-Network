@@ -4,13 +4,21 @@ import 'package:newflutterapp/models/post.dart' as models;
 import 'package:newflutterapp/models/user.dart';
 
 class HomePage extends StatelessWidget {
-  final List<models.Post> posts;
-  final User? user;
-
-  const HomePage({super.key, required this.posts, this.user});
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final UserProvider userProvider = UserProvider.of(context);
+    final User? user = userProvider.user;
+    if (user == null) {
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => Navigator.pushNamed(context, "/login"),
+      );
+    }
+
+    final models.PostProvider postProvider = models.PostProvider.of(context);
+    final List<models.Post> posts = postProvider.posts;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('User : ${user?.username}'),
@@ -18,7 +26,7 @@ class HomePage extends StatelessWidget {
           IconButton(
             icon: Icon(user != null ? Icons.logout : Icons.login),
             onPressed: () {
-              Navigator.pushNamed(context, user != null ? "/logout" : "/login");
+              userProvider.logout();
             },
           )
         ],
